@@ -1,52 +1,0 @@
-Command: ninja flash
-[1/5] cd /home/felix/Master/RP1/RP1_Practicas/Practica_2/station/build && /home/felix/.espressif/python_env/idf6.1_py3.13_env/bin/python /home/felix/.espressif/v6.1/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /home/felix/Master/RP1/RP1_Practicas/Practica_2/station/build/partition_table/partition-table.bin /home/felix/Master/RP1/RP1_Practicas/Practica_2/station/build/wifi_station.bin
-wifi_station.bin binary size 0xb7b60 bytes. Smallest app partition is 0x100000 bytes. 0x484a0 bytes (28%) free.
-[2/5] Performing build step for 'bootloader'
-[1/1] cd /home/felix/Master/RP1/RP1_Practicas/Practica_2/station/build/bootloader && /home/felix/.espressif/python_env/idf6.1_py3.13_env/bin/python /home/felix/.espressif/v6.1/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 /home/felix/Master/RP1/RP1_Practicas/Practica_2/station/build/bootloader/bootloader.bin
-Bootloader binary size 0x52a0 bytes. 0x2d60 bytes (35%) free.
-[3/5] No install step for 'bootloader'
-[4/5] Completed 'bootloader'
-[4/5] Running utility command for flash
-esptool --chip esp32c3 -p /dev/ttyACM0 -b 460800 --before=default-reset --after=hard-reset write-flash --flash-mode dio --flash-freq 80m --flash-size 2MB 0x0 bootloader/bootloader.bin 0x8000 partition_table/partition-table.bin 0x10000 wifi_station.bin --skip-flashed
-esptool v5.4.0
-Serial port /dev/ttyACM0:
-Connecting...
-[1A[2K[1A[2KConnected to ESP32-C3 on /dev/ttyACM0:
-Chip type:          ESP32-C3 (QFN32) (revision v0.4)
-Features:           Wi-Fi, BT 5 (LE), Single Core, 160MHz, Embedded Flash 4MB (XMC)
-Crystal frequency:  40MHz
-USB mode:           USB-Serial/JTAG
-MAC:                34:85:18:01:76:f8
-
-Uploading stub flasher...
-Running stub flasher...
-[1A[2K[1A[2KStub flasher running.
-Changing baud rate to 460800...
-Changed.
-
-Configuring flash size...
-
-Writing 'bootloader/bootloader.bin' at 0x00000000...
-SHA digest in image updated.
-Comparing flash contents against new data...
-[1A[2KFlash will be erased from 0x00000000 to 0x00005fff...
-Compressed 21152 bytes to 13424...
-[2KWriting at 0x000052a0 [38;2;114;156;31m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m 100.0% 13.11kB/13.11kB [0s] 
-[1A[2K[1A[2KWrote 21152 bytes (13424 compressed) at 0x00000000 in 0.3 seconds (520.7 kbit/s).
-Verifying written data...
-[1A[2KHash of data verified.
-
-Writing 'partition_table/partition-table.bin' at 0x00008000...
-Comparing flash contents against new data...
-[1A[2K'partition_table/partition-table.bin' at 0x00008000 already in flash, skipping write.
-
-Writing 'wifi_station.bin' at 0x00010000...
-Comparing flash contents against new data...
-[1A[2KFlash will be erased from 0x00010000 to 0x000c7fff...
-Compressed 752480 bytes to 451325...
-[2KWriting at 0x0001bb98 [38;2;249;38;114m━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m   3.6% 16.00kB/440.75kB [0s] [2KWriting at 0x0002291b [38;2;249;38;114m━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m   7.3% 32.00kB/440.75kB [0s] [2KWriting at 0x0002c884 [38;2;249;38;114m━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━━[0m  10.9% 48.00kB/440.75kB [1s] [2KWriting at 0x00032eda [38;2;249;38;114m━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━[0m  14.5% 64.00kB/440.75kB [2s] [2KWriting at 0x00039fe7 [38;2;249;38;114m━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━[0m  18.2% 80.00kB/440.75kB [3s] [2KWriting at 0x00041327 [38;2;249;38;114m━━━━━━[0m[38;2;249;38;114m╸[0m[38;5;237m━━━━━━━━━━━━━━━━━━━━━━━[0m  21.8% 96.00kB/440.75kB [3s] [2KWriting at 0x00047d08 [38;2;249;38;114m━━━━━━━[0m[38;2;249;38;114m╸[0m[38;5;237m━━━━━━━━━━━━━━━━━━━━━━[0m  25.4% 112.00kB/440.75kB [3s] [2KWriting at 0x0004da34 [38;2;249;38;114m━━━━━━━━[0m[38;2;249;38;114m╸[0m[38;5;237m━━━━━━━━━━━━━━━━━━━━━[0m  29.0% 128.00kB/440.75kB [3s] [2KWriting at 0x000538a0 [38;2;249;38;114m━━━━━━━━━[0m[38;2;249;38;114m╸[0m[38;5;237m━━━━━━━━━━━━━━━━━━━━[0m  32.7% 144.00kB/440.75kB [4s] [2KWriting at 0x000592b4 [38;2;249;38;114m━━━━━━━━━━[0m[38;2;249;38;114m╸[0m[38;5;237m━━━━━━━━━━━━━━━━━━━[0m  36.3% 160.00kB/440.75kB [4s] [2KWriting at 0x0005efa4 [38;2;249;38;114m━━━━━━━━━━━[0m[38;2;249;38;114m╸[0m[38;5;237m━━━━━━━━━━━━━━━━━━[0m  39.9% 176.00kB/440.75kB [4s] [2KWriting at 0x00064f71 [38;2;249;38;114m━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━[0m  43.6% 192.00kB/440.75kB [4s] [2KWriting at 0x0006a8d1 [38;2;249;38;114m━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━[0m  47.2% 208.00kB/440.75kB [4s] [2KWriting at 0x00071272 [38;2;249;38;114m━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━[0m  50.8% 224.00kB/440.75kB [4s] [2KWriting at 0x000773e8 [38;2;249;38;114m━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━[0m  54.5% 240.00kB/440.75kB [4s] [2KWriting at 0x0007d594 [38;2;249;38;114m━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━[0m  58.1% 256.00kB/440.75kB [4s] [2KWriting at 0x0008357f [38;2;249;38;114m━━━━━━━━━━━━━━━━━━[0m[38;2;249;38;114m╸[0m[38;5;237m━━━━━━━━━━━[0m  61.7% 272.00kB/440.75kB [5s] [2KWriting at 0x00089a7f [38;2;249;38;114m━━━━━━━━━━━━━━━━━━━[0m[38;2;249;38;114m╸[0m[38;5;237m━━━━━━━━━━[0m  65.3% 288.00kB/440.75kB [5s] [2KWriting at 0x000908af [38;2;249;38;114m━━━━━━━━━━━━━━━━━━━━[0m[38;2;249;38;114m╸[0m[38;5;237m━━━━━━━━━[0m  69.0% 304.00kB/440.75kB [5s] [2KWriting at 0x000975ef [38;2;249;38;114m━━━━━━━━━━━━━━━━━━━━━[0m[38;2;249;38;114m╸[0m[38;5;237m━━━━━━━━[0m  72.6% 320.00kB/440.75kB [5s] [2KWriting at 0x0009e4b8 [38;2;249;38;114m━━━━━━━━━━━━━━━━━━━━━━[0m[38;2;249;38;114m╸[0m[38;5;237m━━━━━━━[0m  76.2% 336.00kB/440.75kB [5s] [2KWriting at 0x000a4a65 [38;2;249;38;114m━━━━━━━━━━━━━━━━━━━━━━━[0m[38;2;249;38;114m╸[0m[38;5;237m━━━━━━[0m  79.9% 352.00kB/440.75kB [5s] [2KWriting at 0x000aae53 [38;2;249;38;114m━━━━━━━━━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━[0m  83.5% 368.00kB/440.75kB [5s] [2KWriting at 0x000b0a79 [38;2;249;38;114m━━━━━━━━━━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━[0m  87.1% 384.00kB/440.75kB [5s] [2KWriting at 0x000b6ce1 [38;2;249;38;114m━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━[0m  90.8% 400.00kB/440.75kB [5s] [2KWriting at 0x000bda34 [38;2;249;38;114m━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━[0m  94.4% 416.00kB/440.75kB [5s] [2KWriting at 0x000c4141 [38;2;249;38;114m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m  98.0% 432.00kB/440.75kB [6s] [2KWriting at 0x000c7b60 [38;2;114;156;31m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m 100.0% 440.75kB/440.75kB [6s] 
-[1A[2K[1A[2KWrote 752480 bytes (451325 compressed) at 0x00010000 in 6.2 seconds (963.6 kbit/s).
-Verifying written data...
-[1A[2KHash of data verified.
-
-Hard resetting via RTS pin...

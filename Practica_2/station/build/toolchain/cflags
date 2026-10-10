@@ -1,3 +1,0 @@
--march=rv32imc_zicsr_zifencei
--mtune=esp-base
-"-specs=/home/felix/Master/RP1/RP1_Practicas/Practica_2/station/build/specs/picolibc.specs"
