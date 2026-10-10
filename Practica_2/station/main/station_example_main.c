@@ -69,13 +69,32 @@ static const char *TAG = "wifi station";
 
 static int s_retry_num = 0;
 
+#define LOG_EVENT(message) ESP_LOGI(TAG, "--------------- %s ---------------", message)
 
 static void event_handler(void* arg, esp_event_base_t event_base,
                                 int32_t event_id, void* event_data)
 {
-    if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
+    if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_SCAN_DONE) {
+        /* Se podrían recoger los AP encontrados con esp_wifi_scan_get_ap_num()
+         * y esp_wifi_scan_get_ap_records(). Estas llamadas también liberan los
+         * recursos asociados al resultado del escaneo. */
+        LOG_EVENT("WIFI_EVENT_SCAN_DONE: escaneo WiFi finalizado");
+    } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
+        /* La interfaz de estación está lista; se inicia la conexión al AP. */
+        LOG_EVENT("WIFI_EVENT_STA_START: estación iniciada");
         esp_wifi_connect();
+    } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_STOP) {
+        /* Se podrían detener aquí las tareas de la aplicación que dependan
+         * de la red. El driver ya detiene DHCP y libera las conexiones. */
+        LOG_EVENT("WIFI_EVENT_STA_STOP: estación detenida");
+    } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_CONNECTED) {
+        /* Se podría iniciar aquí lógica que no necesite una dirección IP.
+         * Para operaciones que sí la necesiten, se espera a GOT_IP. */
+        LOG_EVENT("WIFI_EVENT_STA_CONNECTED: asociada al AP; esperando IP");
     } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
+        /* Se reintenta la conexión. Si se agotan los intentos, se avisa a
+         * la tarea principal mediante WIFI_FAIL_BIT. */
+        LOG_EVENT("WIFI_EVENT_STA_DISCONNECTED: estación desconectada");
         if (s_retry_num < EXAMPLE_ESP_MAXIMUM_RETRY) {
             esp_wifi_connect();
             s_retry_num++;
@@ -84,11 +103,30 @@ static void event_handler(void* arg, esp_event_base_t event_base,
             xEventGroupSetBits(s_wifi_event_group, WIFI_FAIL_BIT);
         }
         ESP_LOGI(TAG,"connect to the AP fail");
+    } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_AP_START) {
+        /* En un ejemplo con modo AP, aquí se podrían iniciar los servicios
+         * ofrecidos por el punto de acceso. */
+        LOG_EVENT("WIFI_EVENT_AP_START: punto de acceso iniciado");
+    } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_AP_STACONNECTED) {
+        /* En modo AP se podría consultar event_data para identificar la
+         * estación conectada y actualizar el registro de clientes. */
+        LOG_EVENT("WIFI_EVENT_AP_STACONNECTED: estación conectada al AP");
+    } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_AP_STADISCONNECTED) {
+        /* En modo AP se podrían actualizar los clientes y cerrar los sockets
+         * o recursos asociados a la estación desconectada. */
+        LOG_EVENT("WIFI_EVENT_AP_STADISCONNECTED: estación desconectada del AP");
     } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
         ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
-        ESP_LOGI(TAG, "got ip:" IPSTR, IP2STR(&event->ip_info.ip));
+        LOG_EVENT("IP_EVENT_STA_GOT_IP: dirección IP obtenida o modificada");
+        ESP_LOGI(TAG, "IP: " IPSTR, IP2STR(&event->ip_info.ip));
         s_retry_num = 0;
         xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
+        /* Si la IP cambia, se podrían cerrar y recrear los sockets que usen
+         * la dirección anterior, y después iniciar los servicios de red. */
+    } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_LOST_IP) {
+        /* Normalmente basta con registrarlo para depuración. Una aplicación
+         * podría marcar la red como no disponible y pausar tareas de red. */
+        LOG_EVENT("IP_EVENT_STA_LOST_IP: dirección IP perdida");
     }
 }
 
@@ -116,6 +154,12 @@ void wifi_init_sta(void)
                                                         &event_handler,
                                                         NULL,
                                                         &instance_got_ip));
+    esp_event_handler_instance_t instance_lost_ip;
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT,
+                                                        IP_EVENT_STA_LOST_IP,
+                                                        &event_handler,
+                                                        NULL,
+                                                        &instance_lost_ip));
 
     wifi_config_t wifi_config = {
         .sta = {

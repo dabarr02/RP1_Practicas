@@ -18,13 +18,14 @@
 #include "esp_event.h"
 #include "nvs_flash.h"
 #include "regex.h"
+#include "esp_timer.h"
 
 #define DEFAULT_SCAN_LIST_SIZE CONFIG_EXAMPLE_SCAN_LIST_SIZE
 
 #ifdef CONFIG_EXAMPLE_USE_SCAN_CHANNEL_BITMAP
 #define USE_CHANNEL_BITMAP 1
-#define CHANNEL_LIST_SIZE 3
-static uint8_t channel_list[CHANNEL_LIST_SIZE] = {1, 6, 11};
+#define CHANNEL_LIST_SIZE 2
+static uint8_t channel_list[CHANNEL_LIST_SIZE] = {1, 7};
 #endif /*CONFIG_EXAMPLE_USE_SCAN_CHANNEL_BITMAP*/
 
 static const char *TAG = "scan";
@@ -156,6 +157,17 @@ static void array_2_channel_bitmap(const uint8_t channel_list[], const uint8_t c
 }
 #endif /*USE_CHANNEL_BITMAP*/
 
+typedef struct {
+    const char *ssid;
+    const char *contrasenia;
+    int prio;
+} mis_redes_t;
+
+static const mis_redes_t mis_redes[] = {
+    {"Nothing",     "12345678", 2},
+    {"TP-Link_7ED0", "12345678", 1},
+};
+
 
 /* Initialize Wi-Fi as sta and set scan method */
 static void wifi_scan(void)
@@ -174,6 +186,8 @@ static void wifi_scan(void)
     memset(ap_info, 0, sizeof(ap_info));
 
 
+
+
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_start());
 
@@ -183,19 +197,43 @@ static void wifi_scan(void)
         ESP_LOGE(TAG, "Memory Allocation for scan config failed!");
         return;
     }
+
+    scan_config->scan_type = WIFI_SCAN_TYPE_ACTIVE;
+    scan_config->scan_time.active.min = 100;
+    scan_config->scan_time.active.max = 300;
+
     array_2_channel_bitmap(channel_list, CHANNEL_LIST_SIZE, scan_config);
+    int64_t inicio = esp_timer_get_time();
     esp_wifi_scan_start(scan_config, true);
+    int64_t fin = esp_timer_get_time();
+    ESP_LOGI(TAG, "Tiempo de escaneo usando bitmap: %lld ms", (fin - inicio) / 1000);
     free(scan_config);
 
 #else
+    int64_t inicio = esp_timer_get_time();
     esp_wifi_scan_start(NULL, true);
+    int64_t fin = esp_timer_get_time();
+    ESP_LOGI(TAG, "Tiempo de escaneo no usando bitmap: %lld ms", (fin - inicio) / 1000);
 #endif /*USE_CHANNEL_BITMAP*/
+
+    int selected = -1;
+    int prio = -1;
 
     ESP_LOGI(TAG, "Max AP number ap_info can hold = %u", number);
     ESP_ERROR_CHECK(esp_wifi_scan_get_ap_num(&ap_count));
     ESP_ERROR_CHECK(esp_wifi_scan_get_ap_records(&number, ap_info));
     ESP_LOGI(TAG, "Total APs scanned = %u, actual AP number ap_info holds = %u", ap_count, number);
     for (int i = 0; i < number; i++) {
+        for (int j = 0; j < sizeof(mis_redes) / sizeof(mis_redes[0]); j++) {
+            if (strcmp((const char *)ap_info[i].ssid, mis_redes[j].ssid) == 0) {
+                if (prio < mis_redes[j].prio) {
+                    prio = mis_redes[j].prio;
+                    selected = i;
+                }
+                ESP_LOGI(TAG, "Red conocida encontrada: %s", mis_redes[j].ssid);
+                break;
+            }
+        }
         ESP_LOGI(TAG, "SSID \t\t%s", ap_info[i].ssid);
         ESP_LOGI(TAG, "RSSI \t\t%d", ap_info[i].rssi);
         print_auth_mode(ap_info[i].authmode);
@@ -203,6 +241,21 @@ static void wifi_scan(void)
             print_cipher_type(ap_info[i].pairwise_cipher, ap_info[i].group_cipher);
         }
         ESP_LOGI(TAG, "Channel \t\t%d", ap_info[i].primary);
+    }
+
+    if (selected >= 0) {
+        wifi_config_t wifi_config = {0};
+
+        strlcpy((char *)wifi_config.sta.ssid,  mis_redes[selected].ssid, sizeof(wifi_config.sta.ssid));
+
+        strlcpy((char *)wifi_config.sta.password, mis_redes[selected].contrasenia,  sizeof(wifi_config.sta.password));
+
+        ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
+        ESP_ERROR_CHECK(esp_wifi_connect());
+
+        ESP_LOGI(TAG, "Intentando conectar con: %s", mis_redes[selected].ssid);
+    } else {
+        ESP_LOGW(TAG, "No se encontro ninguna red conocida");
     }
 }
 

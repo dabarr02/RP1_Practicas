@@ -20,7 +20,7 @@
     }
   },
   "idf.port": "/dev/ttyACM0",
-  "idf.currentSetup": "/home/danibc/.espressif/v6.0.3/esp-idf",
+  "idf.currentSetup": "/home/felix/.espressif/v6.1/esp-idf",
   "idf.customExtraVars": {
     "IDF_TARGET": "esp32c3"
   },
