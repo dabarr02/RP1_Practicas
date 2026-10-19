@@ -30,10 +30,10 @@ dependencies:
   idf:
     source:
       type: idf
-    version: 6.1.0
+    version: 6.0.3
 direct_dependencies:
 - espressif/network_provisioning
 - espressif/qrcode
 manifest_hash: 8622358648427f887c01938f1d486567c99ba53efe022a6e51c2c1e001582899
-target: esp32c3
+target: esp32
 version: 3.0.0
