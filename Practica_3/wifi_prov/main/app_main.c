@@ -32,6 +32,9 @@
 
 static const char *TAG = "app";
 
+#define DEVICE_NAME_MAX_LEN 64
+static char device_name[DEVICE_NAME_MAX_LEN] = "sin nombre";
+
 #if CONFIG_EXAMPLE_PROV_SECURITY_VERSION_2
 #if CONFIG_EXAMPLE_PROV_SEC2_DEV_MODE
 #define EXAMPLE_PROV_SEC2_USERNAME          "wifiprov"
@@ -239,8 +242,15 @@ static void get_device_service_name(char *service_name, size_t max)
 esp_err_t custom_prov_data_handler(uint32_t session_id, const uint8_t *inbuf, ssize_t inlen,
                                    uint8_t **outbuf, ssize_t *outlen, void *priv_data)
 {
-    if (inbuf) {
-        ESP_LOGI(TAG, "Received data: %.*s", inlen, (char *)inbuf);
+    if (inbuf && inlen > 0) {
+        size_t len = (size_t)inlen;
+        if (len >= sizeof(device_name)) {
+            len = sizeof(device_name) - 1;
+        }
+        memcpy(device_name, inbuf, len);
+        device_name[len] = '\0';
+
+        ESP_LOGI(TAG, "Received device name: %s", device_name);
     }
     char response[] = "SUCCESS";
     *outbuf = (uint8_t *)strdup(response);
@@ -543,7 +553,7 @@ void app_main(void)
 #if CONFIG_EXAMPLE_REPROVISIONING
     while (1) {
         for (int i = 0; i < 10; i++) {
-            ESP_LOGI(TAG, "Hello World!");
+            ESP_LOGI(TAG, "Hello world from %s", device_name);
             vTaskDelay(1000 / portTICK_PERIOD_MS);
         }
 
@@ -555,7 +565,7 @@ void app_main(void)
     }
 #else
     while (1) {
-        ESP_LOGI(TAG, "Hello World!");
+        ESP_LOGI(TAG, "Hello world from %s", device_name);
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 #endif
