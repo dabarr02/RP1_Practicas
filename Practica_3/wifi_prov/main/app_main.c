@@ -416,18 +416,19 @@ void app_main(void)
          *      - NETWORK_PROV_SECURITY_2 SRP6a based authentication and key exchange
          *        + AES-GCM encryption/decryption of messages
          */
-        network_prov_security_t security = NETWORK_PROV_SECURITY_1;
+        network_prov_security_t security = NETWORK_PROV_SECURITY_0;
+        const void *sec_params = NULL;
 
         /* Do we want a proof-of-possession (ignored if Security 0 is selected):
          *      - this should be a string with length > 0
          *      - NULL if not used
          */
-        const char *pop = "abcd1234";
+        const char *pop = NULL;
 
         /* This is the structure for passing security parameters
          * for the protocomm security 1.
          */
-        network_prov_security1_params_t *sec_params = pop;
+        // network_prov_security1_params_t *sec_params = pop;
 
         const char *username  = NULL;
 

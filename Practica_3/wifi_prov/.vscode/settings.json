@@ -1,0 +1,16 @@
+{
+    "idf.currentSetup": "/home/felix/.espressif/v6.1/esp-idf",
+    "idf.openOcdConfigs": [
+        "board/esp32c3-builtin.cfg"
+    ],
+    "idf.customExtraVars": {
+        "IDF_TARGET": "esp32c3"
+    },
+    "clangd.path": "/home/felix/.espressif/tools/esp-clangd/esp-21.1.3_20260408/esp-clangd/bin/clangd",
+    "clangd.arguments": [
+      "--background-index",
+      "--query-driver=**",
+      "--compile-commands-dir=/home/felix/Master/RP1/RP1_Practicas/Practica_3/wifi_prov/build"
+    ],
+    "idf.port": "/dev/ttyACM0"
+}

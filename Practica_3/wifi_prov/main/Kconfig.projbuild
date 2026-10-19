@@ -21,11 +21,13 @@ menu "Example Configuration"
         default EXAMPLE_PROV_SECURITY_VERSION_2
         help
             Wi-Fi provisioning component offers 3 security versions.
-            The example offers a choice between security version 1 and 2.
+            The example chooses the security 1 code path (which can also
+            select security 0 at runtime) or security version 2.
 
         config EXAMPLE_PROV_SECURITY_VERSION_1
             bool "Security version 1"
             select ESP_PROTOCOMM_SUPPORT_SECURITY_VERSION_1
+            select ESP_PROTOCOMM_SUPPORT_SECURITY_VERSION_0
 
         config EXAMPLE_PROV_SECURITY_VERSION_2
             bool "Security version 2"
