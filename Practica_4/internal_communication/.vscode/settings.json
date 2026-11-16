@@ -23,14 +23,14 @@
     "board/esp32c3-builtin.cfg"
   ],
   "idf.port": "detect",
-  "idf.currentSetup": "/home/danibc/.espressif/v6.0.3/esp-idf",
+  "idf.currentSetup": "/home/felix/.espressif/v6.1/esp-idf",
   "idf.customExtraVars": {
-    "IDF_TARGET": "esp32c3"
+    "IDF_TARGET": "esp32"
   },
-  "clangd.path": "/home/danibc/.espressif/tools/esp-clang/esp-20.1.1_20250829/esp-clang/bin/clangd",
+  "clangd.path": "/home/felix/.espressif/tools/esp-clangd/esp-21.1.3_20260408/esp-clangd/bin/clangd",
   "clangd.arguments": [
     "--background-index",
     "--query-driver=**",
-    "--compile-commands-dir=/home/danibc/Documentos/PracticasMaster/RP1/Practica_4/internal_communication/build"
+    "--compile-commands-dir=/home/felix/Master/RP1/RP1_Practicas/Practica_4/internal_communication/build"
   ]
 }
