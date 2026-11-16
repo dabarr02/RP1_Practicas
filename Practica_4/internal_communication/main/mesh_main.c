@@ -31,7 +31,7 @@
  *                Variable Definitions
  *******************************************************/
 static const char *MESH_TAG = "mesh_main";
-static const uint8_t MESH_ID[6] = { 0x77, 0x77, 0x77, 0x77, 0x77, 0x77};
+static const uint8_t MESH_ID[6] = { 0x77,0x77,0x77,0x77,0x77, 0x0b};
 static uint8_t tx_buf[TX_SIZE] = { 0, };
 static uint8_t rx_buf[RX_SIZE] = { 0, };
 static bool is_running = true;
